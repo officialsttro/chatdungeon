@@ -1,35 +1,74 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Chatdungeon Status</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChatDungeon Viewer</title>
   <style>
-    body { background: #121212; color: white; font-family: sans-serif; padding: 20px; }
-    .card { background: #1e1e1e; padding: 16px; margin: 8px 0; border-radius: 8px; }
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    h1 { text-align: center; }
+    .section { margin-bottom: 1.5rem; }
+    .options button { margin-right: .5rem; margin-top: .5rem; }
   </style>
 </head>
 <body>
-  <h1>🗺️ Chatdungeon Status</h1>
-  <div id="story">Lade Geschichte...</div>
-  <div id="options"></div>
-  <div id="enemy" style="margin-top:20px;"></div>
-  <div id="players" style="margin-top:20px;"></div>
+  <h1>ChatDungeon</h1>
+
+  <div class="section">
+    <h2 id="storyTitle">Warte auf Story…</h2>
+    <p id="storyText"></p>
+  </div>
+
+  <div class="section options" id="optionsContainer">
+    <!-- Optionen werden hier dynamisch eingefügt -->
+  </div>
+
+  <div class="section" id="enemyContainer">
+    <!-- Gegner-Info -->
+  </div>
+
+  <div class="section" id="participantsContainer">
+    <!-- Teilnehmerliste -->
+  </div>
 
   <script>
     async function loadStatus() {
-      const res = await fetch("http://192.168.2.38:8000/status");
-      const data = await res.json();
-      document.getElementById("story").innerText = data.story;
-      document.getElementById("enemy").innerHTML = data.gegner ? `<strong>👾 Gegner:</strong> ${data.gegner}` : '';
-      document.getElementById("players").innerHTML = '<strong>👥 Teilnehmer:</strong><ul>' + 
-        data.teilnehmer.map(p => `<li>${p}</li>`).join('') + '</ul>';
-      document.getElementById("options").innerHTML = data.options.map(opt => 
-        `<div class="card">${opt}</div>`).join('');
+      try {
+        const res = await fetch("/api/status");
+        const data = await res.json();
+
+        // Story
+        document.getElementById("storyTitle").textContent = data.story.title || "";
+        document.getElementById("storyText").textContent  = data.story.text  || "";
+
+        // Optionen (nur Anzeige, keine Buttons fürs Voting hier)
+        const optDiv = document.getElementById("optionsContainer");
+        optDiv.innerHTML = "";
+        data.story.options.forEach((opt, i) => {
+          const p = document.createElement("p");
+          p.textContent = `${i+1}: ${opt}`;
+          optDiv.appendChild(p);
+        });
+
+        // Gegner
+        const enemyDiv = document.getElementById("enemyContainer");
+        if (data.enemy) {
+          enemyDiv.textContent = `Gegner: ${data.enemy.name} (HP: ${data.enemy.hp})`;
+        } else {
+          enemyDiv.textContent = "";
+        }
+
+        // Teilnehmer
+        const partDiv = document.getElementById("participantsContainer");
+        partDiv.textContent = `Teilnehmer: ${data.participants.join(", ")}`;
+      } catch (err) {
+        console.error("Fehler beim Laden der Daten:", err);
+      }
     }
 
+    // alle 2 Sekunden aktualisieren
+    setInterval(loadStatus, 2000);
     loadStatus();
-    setInterval(loadStatus, 3000);
   </script>
 </body>
 </html>

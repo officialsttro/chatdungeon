@@ -1,52 +1,92 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChatDungeon Admin</title>
   <style>
-    body { background: #1a1a1a; color: white; font-family: sans-serif; padding: 20px; }
-    input, textarea, button { margin: 8px 0; display: block; width: 100%; }
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    form { margin-bottom: 2rem; padding: 1rem; border: 1px solid #ccc; border-radius: 4px; }
+    input, textarea, button { display: block; width: 100%; margin-top: .5rem; }
+    button { padding: .5rem; margin-top: 1rem; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h1>🛠️ Chatdungeon Admin</h1>
+  <h1>ChatDungeon Admin</h1>
+
+  <!-- Story-Formular -->
   <form id="storyForm">
-    <label>Story:</label>
-    <textarea id="story"></textarea>
-    <label>Optionen (eine pro Zeile):</label>
-    <textarea id="options"></textarea>
+    <h2>Neue Szene</h2>
+    <label for="titleInput">Titel</label>
+    <input type="text" id="titleInput" placeholder="Titel der Szene" required/>
+
+    <label for="storyInput">Text</label>
+    <textarea id="storyInput" rows="4" placeholder="Erzähltext" required></textarea>
+
+    <label>Optionen (1–4)</label>
+    <div id="optionsContainer">
+      <input type="text" class="optionInput" placeholder="Option 1" required/>
+      <input type="text" class="optionInput" placeholder="Option 2"/>
+      <input type="text" class="optionInput" placeholder="Option 3"/>
+      <input type="text" class="optionInput" placeholder="Option 4"/>
+    </div>
+
     <button type="submit">Story senden</button>
   </form>
 
+  <!-- Gegner-Formular -->
   <form id="gegnerForm">
-    <label>Gegnername:</label>
-    <input id="gegner" />
-    <button type="submit">Gegner anzeigen</button>
+    <h2>Neuer Gegner</h2>
+    <label for="enemyNameInput">Name</label>
+    <input type="text" id="enemyNameInput" placeholder="Gegner-Name" required/>
+
+    <label for="enemyHpInput">HP</label>
+    <input type="number" id="enemyHpInput" placeholder="Hitpoints" required/>
+
+    <button type="submit">Gegner senden</button>
   </form>
 
-  <button onclick="fetch('http://192.168.2.38:8000/reset', {method: 'POST'})">🔄 Runde zurücksetzen</button>
+  <!-- Reset-Button -->
+  <button id="resetButton">Alles zurücksetzen</button>
 
   <script>
+    // Story absenden
     document.getElementById("storyForm").addEventListener("submit", async e => {
       e.preventDefault();
-      await fetch("http://192.168.2.38:8000/story", {
+      const titleInput = document.getElementById("titleInput");
+      const storyInput = document.getElementById("storyInput");
+      const optionInputs = document.querySelectorAll(".optionInput");
+      const optionsArray = Array.from(optionInputs)
+                                .map(i => i.value.trim())
+                                .filter(v => v.length > 0);
+
+      await fetch("/api/story", {
         method: "POST",
-        headers: {'Content-Type': 'application/json'},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          story: document.getElementById("story").value,
-          options: document.getElementById("options").value.split("\n")
+          title: titleInput.value,
+          text: storyInput.value,
+          options: optionsArray
         })
       });
     });
 
+    // Gegner absenden
     document.getElementById("gegnerForm").addEventListener("submit", async e => {
       e.preventDefault();
-      await fetch("http://192.168.2.38:8000/gegner", {
+      const name = document.getElementById("enemyNameInput").value.trim();
+      const hp   = parseInt(document.getElementById("enemyHpInput").value, 10);
+
+      await fetch("/api/enemy", {
         method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name: document.getElementById("gegner").value})
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, hp })
       });
+    });
+
+    // Reset
+    document.getElementById("resetButton").addEventListener("click", async () => {
+      await fetch("/api/reset", { method: "POST" });
     });
   </script>
 </body>

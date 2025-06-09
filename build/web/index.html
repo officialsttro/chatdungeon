@@ -8,28 +8,17 @@
     body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
     h1 { text-align: center; }
     .section { margin-bottom: 1.5rem; }
-    .options p { margin: .5rem 0; }
+    #options p { margin: .5rem 0; }
+    #enemy, #players { margin-top: 20px; }
   </style>
 </head>
 <body>
   <h1>ChatDungeon</h1>
 
-  <div class="section">
-    <h2 id="storyTitle">Warte auf Story…</h2>
-    <p id="storyText"></p>
-  </div>
-
-  <div class="section options" id="optionsContainer">
-    <!-- Optionen werden hier dynamisch eingefügt -->
-  </div>
-
-  <div class="section" id="enemyContainer">
-    <!-- Gegner-Info -->
-  </div>
-
-  <div class="section" id="participantsContainer">
-    <!-- Teilnehmerliste -->
-  </div>
+  <div id="story" class="section">Lade Geschichte…</div>
+  <div id="options" class="section"></div>
+  <div id="enemy" class="section"></div>
+  <div id="players" class="section"></div>
 
   <script>
     async function loadStatus() {
@@ -38,29 +27,22 @@
         const data = await res.json();
 
         // Story
-        document.getElementById("storyTitle").textContent = data.story.title || "–";
-        document.getElementById("storyText").textContent  = data.story.text  || "";
+        document.getElementById("story").innerText = data.story.title
+          ? `${data.story.title}: ${data.story.text}`
+          : "Warte auf Story…";
 
         // Optionen
-        const optDiv = document.getElementById("optionsContainer");
-        optDiv.innerHTML = "";
-        data.story.options.forEach((opt, i) => {
-          const p = document.createElement("p");
-          p.textContent = `${i + 1}: ${opt}`;
-          optDiv.appendChild(p);
-        });
+        document.getElementById("options").innerHTML = data.story.options
+          .map((opt, i) => `<p>${i+1}: ${opt}</p>`)
+          .join("");
 
         // Gegner
-        const enemyDiv = document.getElementById("enemyContainer");
-        if (data.enemy) {
-          enemyDiv.textContent = `Gegner: ${data.enemy.name} (HP: ${data.enemy.hp})`;
-        } else {
-          enemyDiv.textContent = "";
-        }
+        document.getElementById("enemy").innerText = data.enemy
+          ? `Gegner: ${data.enemy.name} (HP: ${data.enemy.hp})`
+          : "";
 
         // Teilnehmer
-        const partDiv = document.getElementById("participantsContainer");
-        partDiv.textContent = data.participants.length
+        document.getElementById("players").innerText = data.participants.length
           ? `Teilnehmer: ${data.participants.join(", ")}`
           : "Keine Teilnehmer";
       } catch (err) {

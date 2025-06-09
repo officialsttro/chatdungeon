@@ -29,6 +29,7 @@ class StatusPage extends StatefulWidget {
 class _StatusPageState extends State<StatusPage> {
   String story = '⏳ Warte auf den Spielleiter...';
   List<String> options = [];
+  List<String> tasks = [];
   String? gegner;
   List<String> teilnehmer = [];
 
@@ -46,6 +47,7 @@ class _StatusPageState extends State<StatusPage> {
         setState(() {
           story = data['story'] ?? '';
           options = List<String>.from(data['options'] ?? []);
+          tasks = List<String>.from(data['tasks'] ?? []);
           gegner = data['enemy'];
           teilnehmer = List<String>.from(data['players'] ?? []);
         });
@@ -95,6 +97,28 @@ class _StatusPageState extends State<StatusPage> {
                   ),
                 ),
               ),
+              if (tasks.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  '📝 Aufgaben',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                const SizedBox(height: 8),
+                ...tasks.map(
+                  (t) => Container(
+                    margin: const EdgeInsets.symmetric(vertical: 2),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[850],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      t,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 20),
               if (gegner != null)
                 Column(

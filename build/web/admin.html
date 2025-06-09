@@ -16,6 +16,8 @@
     <textarea id="story"></textarea>
     <label>Optionen (eine pro Zeile):</label>
     <textarea id="options"></textarea>
+    <label>Aufgaben (eine pro Zeile):</label>
+    <textarea id="tasks"></textarea>
     <button type="submit">Story senden</button>
   </form>
 
@@ -35,7 +37,8 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
           story: document.getElementById("story").value,
-          options: document.getElementById("options").value.split("\n")
+          options: document.getElementById("options").value.split("\n"),
+          tasks: document.getElementById("tasks").value.split("\n")
         })
       });
     });

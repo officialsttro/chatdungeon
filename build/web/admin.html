@@ -53,19 +53,19 @@
     // Story absenden
     document.getElementById("storyForm").addEventListener("submit", async e => {
       e.preventDefault();
-      const titleInput = document.getElementById("titleInput");
-      const storyInput = document.getElementById("storyInput");
-      const optionInputs = document.querySelectorAll(".optionInput");
-      const optionsArray = Array.from(optionInputs)
-                                .map(i => i.value.trim())
-                                .filter(v => v.length > 0);
+      const titleInput    = document.getElementById("titleInput");
+      const storyInput    = document.getElementById("storyInput");
+      const optionInputs  = document.querySelectorAll(".optionInput");
+      const optionsArray  = Array.from(optionInputs)
+                                 .map(i => i.value.trim())
+                                 .filter(v => v.length > 0);
 
       await fetch("/api/story", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: titleInput.value,
-          text: storyInput.value,
+          title:   titleInput.value,
+          text:    storyInput.value,
           options: optionsArray
         })
       });

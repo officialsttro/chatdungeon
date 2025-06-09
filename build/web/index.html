@@ -8,7 +8,7 @@
     body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
     h1 { text-align: center; }
     .section { margin-bottom: 1.5rem; }
-    .options button { margin-right: .5rem; margin-top: .5rem; }
+    .options p { margin: .5rem 0; }
   </style>
 </head>
 <body>
@@ -34,19 +34,19 @@
   <script>
     async function loadStatus() {
       try {
-        const res = await fetch("/api/status");
+        const res  = await fetch("/api/status");
         const data = await res.json();
 
         // Story
-        document.getElementById("storyTitle").textContent = data.story.title || "";
+        document.getElementById("storyTitle").textContent = data.story.title || "–";
         document.getElementById("storyText").textContent  = data.story.text  || "";
 
-        // Optionen (nur Anzeige, keine Buttons fürs Voting hier)
+        // Optionen
         const optDiv = document.getElementById("optionsContainer");
         optDiv.innerHTML = "";
         data.story.options.forEach((opt, i) => {
           const p = document.createElement("p");
-          p.textContent = `${i+1}: ${opt}`;
+          p.textContent = `${i + 1}: ${opt}`;
           optDiv.appendChild(p);
         });
 
@@ -60,7 +60,9 @@
 
         // Teilnehmer
         const partDiv = document.getElementById("participantsContainer");
-        partDiv.textContent = `Teilnehmer: ${data.participants.join(", ")}`;
+        partDiv.textContent = data.participants.length
+          ? `Teilnehmer: ${data.participants.join(", ")}`
+          : "Keine Teilnehmer";
       } catch (err) {
         console.error("Fehler beim Laden der Daten:", err);
       }

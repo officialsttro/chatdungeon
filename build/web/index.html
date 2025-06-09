@@ -13,6 +13,7 @@
   <h1>🗺️ Chatdungeon Status</h1>
   <div id="story">Lade Geschichte...</div>
   <div id="options"></div>
+  <div id="tasks"></div>
   <div id="enemy" style="margin-top:20px;"></div>
   <div id="players" style="margin-top:20px;"></div>
 
@@ -22,10 +23,14 @@
       const data = await res.json();
       document.getElementById("story").innerText = data.story;
       document.getElementById("enemy").innerHTML = data.gegner ? `<strong>👾 Gegner:</strong> ${data.gegner}` : '';
-      document.getElementById("players").innerHTML = '<strong>👥 Teilnehmer:</strong><ul>' + 
+      document.getElementById("players").innerHTML = '<strong>👥 Teilnehmer:</strong><ul>' +
         data.teilnehmer.map(p => `<li>${p}</li>`).join('') + '</ul>';
-      document.getElementById("options").innerHTML = data.options.map(opt => 
+      document.getElementById("options").innerHTML = data.options.map(opt =>
         `<div class="card">${opt}</div>`).join('');
+      document.getElementById("tasks").innerHTML = data.tasks && data.tasks.length
+        ? '<strong>📝 Aufgaben:</strong><ul>' +
+          data.tasks.map(t => `<li>${t}</li>`).join('') + '</ul>'
+        : '';
     }
 
     loadStatus();

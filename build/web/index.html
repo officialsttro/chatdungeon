@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chatdungeon Status</title>
+  <style>
+    body { background: #121212; color: white; font-family: sans-serif; padding: 20px; }
+    .card { background: #1e1e1e; padding: 16px; margin: 8px 0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>🗺️ Chatdungeon Status</h1>
+  <div id="story">Lade Geschichte...</div>
+  <div id="options"></div>
+  <div id="enemy" style="margin-top:20px;"></div>
+  <div id="players" style="margin-top:20px;"></div>
+
+  <script>
+    async function loadStatus() {
+      const res = await fetch("http://192.168.2.38:8000/status");
+      const data = await res.json();
+      document.getElementById("story").innerText = data.story;
+      document.getElementById("enemy").innerHTML = data.gegner ? `<strong>👾 Gegner:</strong> ${data.gegner}` : '';
+      document.getElementById("players").innerHTML = '<strong>👥 Teilnehmer:</strong><ul>' + 
+        data.teilnehmer.map(p => `<li>${p}</li>`).join('') + '</ul>';
+      document.getElementById("options").innerHTML = data.options.map(opt => 
+        `<div class="card">${opt}</div>`).join('');
+    }
+
+    loadStatus();
+    setInterval(loadStatus, 3000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <style>
+    body { background: #1a1a1a; color: white; font-family: sans-serif; padding: 20px; }
+    input, textarea, button { margin: 8px 0; display: block; width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>🛠️ Chatdungeon Admin</h1>
+  <form id="storyForm">
+    <label>Story:</label>
+    <textarea id="story"></textarea>
+    <label>Optionen (eine pro Zeile):</label>
+    <textarea id="options"></textarea>
+    <button type="submit">Story senden</button>
+  </form>
+
+  <form id="gegnerForm">
+    <label>Gegnername:</label>
+    <input id="gegner" />
+    <button type="submit">Gegner anzeigen</button>
+  </form>
+
+  <button onclick="fetch('http://192.168.2.38:8000/reset', {method: 'POST'})">🔄 Runde zurücksetzen</button>
+
+  <script>
+    document.getElementById("storyForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      await fetch("http://192.168.2.38:8000/story", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          story: document.getElementById("story").value,
+          options: document.getElementById("options").value.split("\n")
+        })
+      });
+    });
+
+    document.getElementById("gegnerForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      await fetch("http://192.168.2.38:8000/gegner", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: document.getElementById("gegner").value})
+      });
+    });
+  </script>
+</body>
+</html>
